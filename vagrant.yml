@@ -1,8 +1,42 @@
 ---
-vm_box: ubuntu/trusty64
+vm_box: ubuntu/xenial64
 vm_name: neo4j-node
 vm_memory: 4096
 vm_gui: false
 vm_ip_prefix: 192.168.3
 cluster_size: 3
 neo4j_host_coordination_port: 5001
+group: "neo4j"
+datacenters:
+  - name: "dc1"
+    subnet: "192.168.3.0/24"
+    router_ip: "192.168.3.11"
+    servers:
+      - name: "node1"
+        ip: "192.168.3.11"
+        ram: 2048
+        cpu: 2
+      - name: "node2"
+        ip: "192.168.3.12"
+        ram: 2048
+        cpu: 2
+      - name: "node3"
+        ip: "192.168.3.13"
+        ram: 2048
+        cpu: 2
+  - name: "dc2"
+    subnet: "192.168.3.0/24"
+    router_ip: "192.168.3.21"
+    servers:
+      - name: "node1"
+        ip: "192.168.3.21"
+        ram: 2048
+        cpu: 2    
+      - name: "node2"
+        ip: "192.168.3.22"
+        ram: 2048
+        cpu: 2
+      - name: "node3"
+        ip: "192.168.3.23"
+        ram: 2048
+        cpu: 2        

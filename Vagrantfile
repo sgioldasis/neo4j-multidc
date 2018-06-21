@@ -4,67 +4,117 @@
 require 'yaml'
 settings = YAML.load_file 'vagrant.yml'
 
+# settings['datacenters'].each do |dc|
+#   dc['servers'].each do |machine|
+#     txt = "----------- Router: " + dc['name'] + '-' + machine['name']
+#     if machine['is_router']
+#       puts txt
+#     end
+#   end
+# end
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
 
-  # Loop with node_number taking values from 1 to the configured cluster size
-  (1..settings['cluster_size']).each do |node_number|
+  # Loop through datacenters
+  settings['datacenters'].each do |dc|
 
-    # Define node_name by appending the node number to the configured vm_name
-    node_name = settings['vm_name'] + "#{node_number}"
+    # Loop through servers
+    dc['servers'].each do |machine|
 
-    # Define settings for each node
-    config.vm.define node_name do |node|
+      # Variables
+      vm_group = '/' + settings['group'] + "/" + dc['name']
+      vm_name = settings['group'] + "-" + dc['name'] + '-' + machine['name']
+      vm_dc_internal_network = settings['group'] + "-" + dc['name'] + '-network'
+      vm_router_network = settings['group'] + '-router-network'
+      vm_internal_network = settings['group'] + '-network'
 
-      # Every Vagrant development environment requires a box. You can search for
-      # boxes at https://vagrantcloud.com/search.
-      node.vm.box = settings['vm_box']
+      # Define settings for each node
+      config.vm.define vm_name do |node|
 
-      # Determine node_ip based on the configured vm_ip_prefix 
-      node_ip = settings['vm_ip_prefix']+"."+"#{node_number+10}"
+        node.vm.box = settings['vm_box']
 
-      # Create a private network, which allows access to the machine using node_ip
-      node.vm.network "private_network", ip: node_ip
+        node.vm.provider "virtualbox" do |vb|
+          vb.customize ["modifyvm", :id, "--memory", machine['ram']]
+          vb.customize ["modifyvm", :id, "--groups", vm_group]
+          vb.name = vm_name
+        end #vb
+          
+        node.vm.hostname = vm_name
 
-      # Provider-specific configuration so you can fine-tune various
-      # backing providers for Vagrant. These expose provider-specific options.
-      # Below configuration targets VirtualBox:
-      node.vm.provider "virtualbox" do |vb|
-        # Display the VirtualBox GUI when booting the machine
-        vb.gui = settings['vm_gui']
-      
-        # Customize the amount of memory on the VM:
-        vb.memory = settings['vm_memory']
+        node.vm.network "private_network", ip: machine['ip']
+        # , netmask: "255.255.0.0"
 
-        # Customize the name of the VM:
-        vb.name = node_name
-      end
-      
-      # Ansible provisioning
+        # Router machine
+        if machine['ip'] == dc['router_ip']
 
-      # Disable the new default behavior introduced in Vagrant 1.7, to
-      # ensure that all Vagrant machines will use the same SSH key pair.
-      # See https://github.com/mitchellh/vagrant/issues/5005
-      node.ssh.insert_key = false
+          # node.vm.network "private_network", 
+          #   ip: machine['ip'], 
+          #   netmask: "255.255.0.0",
+          #   # virtualbox__intnet:  vm_internal_network, 
+          #   adapter: 2
 
-      # Determine neo4j_initial_hosts 
-      initial_node_ip = settings['vm_ip_prefix']+"."+"11"
-      host_coordination_port = settings['neo4j_host_coordination_port'].to_s
-      neo4j_initial_hosts = initial_node_ip + ":" + host_coordination_port
+          # Enable ip forwarding
+          node.vm.provision "shell",
+            # run: "always",
+            inline: "echo 1 > /proc/sys/net/ipv4/ip_forward"
 
-      # Call Ansible also passing it values needed for configuration
-      node.vm.provision "ansible" do |ansible|
-        ansible.verbose = "v"
-        ansible.playbook = "playbook.yml"
-        ansible.extra_vars = {
-          node_ip_address: node_ip,
-          neo4j_server_id: node_number,
-          neo4j_initial_hosts: neo4j_initial_hosts
-      }
-      end
-    end
-  end
+          # Add routes to other dc routers
+          settings['datacenters'].each do |otherdc|
+            if otherdc != dc
+              otherdc['servers'].each do |othermachine|
+                # node.vm.provision "shell",
+                #   # run: "always",
+                #   inline: "ip route del " + otherdc['subnet'] + " via " + otherdc['router_ip'] + " dev enp0s8"
+                node.vm.provision "shell",
+                  # run: "always",
+                  inline: "ip route add " + othermachine['ip'] + " via " + otherdc['router_ip'] # + " dev enp0s8"
+              end
+            end
+          end
+          # node.vm.provision "shell",
+          #   inline: "ip route del " + dc['subnet'] + " dev enp0s8 "
+          # node.vm.provision "shell",
+          #   inline: "ip route add " + dc['subnet'] + " dev enp0s8  proto kernel  scope link  src " + machine['ip']
+
+        # Edge machine
+        else
+
+          # node.vm.network "private_network", 
+          #   ip: machine['ip'], 
+          #   netmask: "255.255.255.0",
+          #   gw: dc['router_ip'],
+          #   # virtualbox__intnet:  vm_internal_network, 
+          #   adapter: 2
+
+          # Add routes for the other dcs through the current dc router
+          settings['datacenters'].each do |otherdc|
+            if otherdc != dc
+              otherdc['servers'].each do |othermachine|
+                # node.vm.provision "shell",
+                #   # run: "always",
+                #   inline: "ip route del " + otherdc['subnet'] + " via " + dc['router_ip'] + " dev enp0s8"
+                # node.vm.provision "shell",
+                #   inline: "ip route del " + otherdc['subnet'] + " dev enp0s8"
+                node.vm.provision "shell",
+                  # run: "always",
+                  inline: "ip route add " + othermachine['ip'] + " via " + dc['router_ip'] #+ " dev enp0s8"
+              end
+            end
+          end
+          # node.vm.provision "shell",
+          #   inline: "ip route del " + dc['subnet'] + " dev enp0s8 "
+          # node.vm.provision "shell",
+          #   inline: "ip route add " + dc['subnet'] + " dev enp0s8  proto kernel  scope link  src " + machine['ip']
+
+        end # if
+
+      end # node
+    end # machine
+  end # dc
+
+  
 end

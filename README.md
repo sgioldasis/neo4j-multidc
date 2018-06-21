@@ -1,2 +1,2 @@
-# neo4j-cluster
-Neo4j Cluster with Vagrant and Ansible
+# neo4j-multidc
+A simulation of Neo4j multi data center using Vagrant, Ansible and Virtualbox
