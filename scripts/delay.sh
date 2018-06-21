@@ -6,11 +6,6 @@
 
 # Delete all existing qdiscs
 tc qdisc del dev enp0s8 root
-# tc qdisc add dev enp0s8 root handle 1: htb
-# tc class add dev enp0s8 parent 1: classid 1:1 htb rate 1000mbit
-# tc filter add dev enp0s8 parent 1: protocol ip prio 1 u32 flowid 1:1 match ip dst 192.168.12.0/24
-# tc qdisc add dev enp0s8 parent 1:1 handle 10: netem delay 2500ms 500ms
-
 
 # This line sets a HTB qdisc on the root of enp0s8, and it specifies that the class 1:30 is used by default. It sets the name of the root as 1:, for future references.
 tc qdisc add dev enp0s8 root handle 1: htb default 30
@@ -51,9 +46,6 @@ tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip dst 192.168.3
 tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip src 192.168.3.21/32 flowid 1:20
 tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip src 192.168.3.22/32 flowid 1:20
 tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip src 192.168.3.23/32 flowid 1:20
-
-
-
 
 # # Martin Devera, author of HTB, then recommends SFQ for beneath these classes:
 # tc qdisc add dev enp0s8 parent 1:10 handle 10: sfq perturb 10

@@ -9,7 +9,6 @@ neo4j_host_coordination_port: 5001
 group: "neo4j"
 datacenters:
   - name: "dc1"
-    subnet: "192.168.3.0/24"
     router_ip: "192.168.3.11"
     servers:
       - name: "node1"
@@ -25,7 +24,6 @@ datacenters:
         ram: 2048
         cpu: 2
   - name: "dc2"
-    subnet: "192.168.3.0/24"
     router_ip: "192.168.3.21"
     servers:
       - name: "node1"
