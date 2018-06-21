@@ -1,0 +1,3 @@
+sudo journalctl -u neo4j -b
+sudo /vagrant/scripts/delay.sh
+
