@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
 
         node.vm.provider "virtualbox" do |vb|
           vb.customize ["modifyvm", :id, "--memory", machine['ram']]
+          vb.customize ["modifyvm", :id, "--cpus", machine['cpus']]
           vb.customize ["modifyvm", :id, "--groups", vm_group]
           vb.name = vm_name
         end #vb

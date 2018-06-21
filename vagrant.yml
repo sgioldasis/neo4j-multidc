@@ -14,27 +14,27 @@ datacenters:
       - name: "node1"
         ip: "192.168.3.11"
         ram: 2048
-        cpu: 2
+        cpus: 2
       - name: "node2"
         ip: "192.168.3.12"
         ram: 2048
-        cpu: 2
+        cpus: 2
       - name: "node3"
         ip: "192.168.3.13"
         ram: 2048
-        cpu: 2
+        cpus: 2
   - name: "dc2"
     router_ip: "192.168.3.21"
     servers:
       - name: "node1"
         ip: "192.168.3.21"
         ram: 2048
-        cpu: 2    
+        cpus: 2    
       - name: "node2"
         ip: "192.168.3.22"
         ram: 2048
-        cpu: 2
+        cpus: 2
       - name: "node3"
         ip: "192.168.3.23"
         ram: 2048
-        cpu: 2        
+        cpus: 2        
