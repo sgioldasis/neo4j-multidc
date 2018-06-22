@@ -5,6 +5,8 @@
 require 'yaml'
 settings = YAML.load_file 'vagrant.yml'
 
+server_id = 0
+
 # All Vagrant configuration is done below. 
 Vagrant.configure("2") do |config|
 
@@ -15,6 +17,9 @@ Vagrant.configure("2") do |config|
     dc['servers'].each do |machine|
 
       # Variables
+      server_id = server_id + 1
+      # puts "Server id = " + server_id.to_s
+
       vm_group = '/' + settings['vm_group'] + "/" + dc['name']
       vm_name = settings['vm_group'] + "-" + dc['name'] + '-' + machine['name']
 
@@ -28,6 +33,7 @@ Vagrant.configure("2") do |config|
           vb.customize ["modifyvm", :id, "--cpus", machine['cpus']]
           vb.customize ["modifyvm", :id, "--groups", vm_group]
           vb.name = vm_name
+          # vb.linked_clone = true
         end #vb
           
         node.vm.hostname = vm_name
@@ -46,9 +52,11 @@ Vagrant.configure("2") do |config|
           settings['datacenters'].each do |otherdc|
             if otherdc != dc
               otherdc['servers'].each do |othermachine|
-                node.vm.provision "shell", 
-                  run: "always",
-                  inline: "ip route add " + othermachine['ip'] + " via " + otherdc['router_ip']
+                if othermachine['ip'] != otherdc['router_ip']
+                  node.vm.provision "shell", 
+                    run: "always",
+                    inline: "ip route add " + othermachine['ip'] + " via " + otherdc['router_ip']
+                end
               end
             end
           end
@@ -79,7 +87,16 @@ Vagrant.configure("2") do |config|
         # Determine neo4j_initial_hosts 
         node_ip = machine['ip']
         node_id = machine['id']
+        neo4j_dbms_mode = machine['neo4j_dbms_mode']
+        neo4j_server_groups = machine['neo4j_server_groups']
+        neo4j_database = dc['neo4j_database']
         initial_node_ip = settings['neo4j_initial_node']
+        neo4j_initial_discovery_members = settings['neo4j_initial_discovery_members']
+        neo4j_heap_initial_size = settings['neo4j_heap_initial_size']
+        neo4j_heap_max_size = settings['neo4j_heap_max_size']
+        neo4j_pagecache_size = settings['neo4j_pagecache_size']
+        neo4j_minimum_core_cluster_size_at_formation = settings['neo4j_minimum_core_cluster_size_at_formation']
+        neo4j_minimum_core_cluster_size_at_runtime = settings['neo4j_minimum_core_cluster_size_at_runtime']
         host_coordination_port = settings['neo4j_host_coordination_port'].to_s
         # neo4j_initial_hosts = initial_node_ip + ":" + host_coordination_port
         neo4j_initial_hosts = settings['neo4j_initial_hosts']
@@ -90,11 +107,32 @@ Vagrant.configure("2") do |config|
           ansible.playbook = "playbook.yml"
           ansible.extra_vars = {
             node_ip_address: node_ip,
-            neo4j_server_id: node_id,
-            neo4j_initial_hosts: neo4j_initial_hosts
+            # neo4j_server_id: node_id,
+            neo4j_server_id: server_id.to_s,
+            neo4j_initial_hosts: neo4j_initial_hosts,
+            neo4j_initial_discovery_members: neo4j_initial_discovery_members,
+            neo4j_heap_initial_size: neo4j_heap_initial_size,
+            neo4j_heap_max_size: neo4j_heap_max_size,
+            neo4j_pagecache_size: neo4j_pagecache_size,
+            neo4j_minimum_core_cluster_size_at_formation: neo4j_minimum_core_cluster_size_at_formation,
+            neo4j_minimum_core_cluster_size_at_runtime: neo4j_minimum_core_cluster_size_at_runtime,
+            neo4j_dbms_mode: neo4j_dbms_mode,
+            neo4j_server_groups: neo4j_server_groups,
+            neo4j_database: neo4j_database
         }
         end
-        
+
+        node.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+        node.vm.provision "shell", 
+          run: "always",
+          inline: "service neo4j restart"
+
+        delay_script = "scripts/delay-" + dc['name'] + ".sh"
+        node.vm.provision "shell", 
+          run: "always",
+          path: delay_script
+
       end # node
     end # machine
   end # dc

@@ -1,3 +1,31 @@
 sudo journalctl -u neo4j -b
-sudo /vagrant/scripts/delay.sh
+less /var/log/neo4j/debug.log
 
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y make build-essential nodejs unzip binutils numactl collectd
+cd /vagrant/performance/nosql-tests/
+node benchmark.js neo4j -t singleWriteSync
+node benchmark.js neo4j -a 192.168.3.11 -t singleWriteSync
+
+// Find the nodes you want to delete
+MATCH (n)
+// Take the first 10k nodes and their rels (if more than 100 rels / node on average lower this number)
+WITH n LIMIT 10000
+DETACH DELETE n
+RETURN count(*);
+
+call apoc.periodic.iterate("MATCH (n) return n", "DETACH DELETE n", {batchSize:1000})
+yield batches, total return batches, total
+
+ping -c 5 192.168.3.21
+ping -c 5 192.168.3.31
+sudo /vagrant/scripts/delay.sh
+ping -c 5 192.168.3.31
+
+
+sudo service neo4j stop
+sudo rm -rf /var/lib/neo4j/data/databases/graph.db
+sudo service neo4j start
+less /var/log/neo4j/debug.log
+
+neo4j-admin memrec
