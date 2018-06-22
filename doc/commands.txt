@@ -27,5 +27,12 @@ sudo service neo4j stop
 sudo rm -rf /var/lib/neo4j/data/databases/graph.db
 sudo service neo4j start
 less /var/log/neo4j/debug.log
+sudo journalctl -u neo4j -b
 
 neo4j-admin memrec
+
+sudo service neo4j stop
+sudo neo4j-admin unbind
+sudo service neo4j start
+
+neo4j-admin unbind [--database=<name>]
