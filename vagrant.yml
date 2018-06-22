@@ -17,32 +17,32 @@ datacenters:
     router_ip: "192.168.3.11"
     neo4j_database: "eu-west"
     servers:
-      - name: "node1"
+      - id: 11
+        name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "eu,eu-west"
         ip: "192.168.3.11"
         ram: 8192
         cpus: 4
-        # id: 1
   - name: "eu-north"
     router_ip: "192.168.3.21"
     neo4j_database: "eu-north"
     servers:
-      - name: "node1"
+      - id: 21
+        name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "eu,eu-north"
         ip: "192.168.3.21"
         ram: 8192
         cpus: 4    
-        # id: 2
   - name: "china"
     router_ip: "192.168.3.31"
     neo4j_database: "china"
     servers:
-      - name: "node1"
+      - id: 31
+        name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "china"
         ip: "192.168.3.31"
         ram: 8192
         cpus: 4    
-        # id: 3

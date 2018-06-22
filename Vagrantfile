@@ -5,8 +5,6 @@
 require 'yaml'
 settings = YAML.load_file 'vagrant.yml'
 
-server_id = 0
-
 # All Vagrant configuration is done below. 
 Vagrant.configure("2") do |config|
 
@@ -17,9 +15,6 @@ Vagrant.configure("2") do |config|
     dc['servers'].each do |machine|
 
       # Variables
-      server_id = server_id + 1
-      # puts "Server id = " + server_id.to_s
-
       vm_group = '/' + settings['vm_group'] + "/" + dc['name']
       vm_name = settings['vm_group'] + "-" + dc['name'] + '-' + machine['name']
 
@@ -107,8 +102,7 @@ Vagrant.configure("2") do |config|
           ansible.playbook = "playbook.yml"
           ansible.extra_vars = {
             node_ip_address: node_ip,
-            # neo4j_server_id: node_id,
-            neo4j_server_id: server_id.to_s,
+            neo4j_server_id: node_id,
             neo4j_initial_hosts: neo4j_initial_hosts,
             neo4j_initial_discovery_members: neo4j_initial_discovery_members,
             neo4j_heap_initial_size: neo4j_heap_initial_size,

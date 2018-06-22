@@ -3,6 +3,7 @@ less /var/log/neo4j/debug.log
 
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y make build-essential nodejs unzip binutils numactl collectd
+
 cd /vagrant/performance/nosql-tests/
 node benchmark.js neo4j -t singleWriteSync
 node benchmark.js neo4j -a 192.168.3.11 -t singleWriteSync
@@ -36,3 +37,25 @@ sudo neo4j-admin unbind
 sudo service neo4j start
 
 neo4j-admin unbind [--database=<name>]
+
+HA
+--
+sudo service neo4j stop
+sudo rm -rf /var/lib/neo4j/data/databases/graph.db
+cp ansible-neo4j/templates/neo4j.ha.conf ansible-neo4j/templates/neo4j.conf
+vagrant provision
+
+CC
+--
+sudo service neo4j stop
+sudo neo4j-admin unbind
+sudo rm -rf /var/lib/neo4j/data/databases/graph.db
+sudo service neo4j start
+
+cp ansible-neo4j/templates/neo4j.cc.conf ansible-neo4j/templates/neo4j.conf
+vagrant provision
+
+
+nano /etc/neo4j/neo4j.conf
+
+

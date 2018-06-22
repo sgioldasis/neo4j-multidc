@@ -1,0 +1,26 @@
+HA
+--
+node benchmark.js neo4j -t singleWriteSync
+INFO using server address 127.0.0.1
+INFO start
+INFO executing single write sync with 100000 documents
+INFO -----------------------------------------------------------------------------
+INFO Neo4J: single writes sync, 100000 items
+INFO Total Time for 100000 requests: 611662 ms
+INFO Average: 6.11662 ms
+INFO -----------------------------------------------------------------------------
+DONE
+
+
+CC
+--
+node benchmark.js neo4j -t singleWriteSync
+INFO using server address 127.0.0.1
+INFO start
+INFO executing single write sync with 100000 documents
+INFO -----------------------------------------------------------------------------
+INFO Neo4J: single writes sync, 100000 items
+INFO Total Time for 100000 requests: 492078 ms
+INFO Average: 4.92078 ms
+INFO -----------------------------------------------------------------------------
+DONE
