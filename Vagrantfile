@@ -5,6 +5,16 @@
 require 'yaml'
 settings = YAML.load_file 'vagrant.yml'
 
+# Generate hosts.out
+open('hosts.out', 'w') { |f|
+settings['datacenters'].each do |dc|
+  dc['servers'].each do |machine|
+    machine_name = settings['vm_group'] + "-" + dc['name'] + '-' + machine['name']
+    f.puts machine['ip'] + " " + machine_name + " " + machine_name
+  end
+end
+}
+
 # All Vagrant configuration is done below. 
 Vagrant.configure("2") do |config|
 
@@ -126,6 +136,10 @@ Vagrant.configure("2") do |config|
         node.vm.provision "shell", 
           run: "always",
           path: delay_script
+
+        node.vm.provision "shell", 
+          run: "always",
+          inline: "sed -i '/neo4j/d' /etc/hosts && cat /vagrant/hosts.out >> /etc/hosts"
 
       end # node
     end # machine

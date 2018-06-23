@@ -1,0 +1,4 @@
+192.168.3.11 neo4j-eu-west-node1 neo4j-eu-west-node1
+192.168.3.12 neo4j-eu-west-node2 neo4j-eu-west-node2
+192.168.3.21 neo4j-eu-north-node1 neo4j-eu-north-node1
+192.168.3.31 neo4j-china-node1 neo4j-china-node1

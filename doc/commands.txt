@@ -1,5 +1,6 @@
 sudo journalctl -u neo4j -b
 less /var/log/neo4j/debug.log
+sudo nano /etc/neo4j/neo4j.conf
 
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install -y make build-essential nodejs unzip binutils numactl collectd
@@ -56,6 +57,8 @@ cp ansible-neo4j/templates/neo4j.cc.conf ansible-neo4j/templates/neo4j.conf
 vagrant provision
 
 
-nano /etc/neo4j/neo4j.conf
 
-
+:sysinfo
+call dbms.cluster.overview
+CALL dbms.cluster.routing.getServers
+CALL dbms.cluster.role

@@ -87,16 +87,16 @@ dbms.connectors.default_advertised_address={{ node_ip_address }}
 dbms.connector.bolt.enabled=true
 #dbms.connector.bolt.tls_level=OPTIONAL
 # dbms.connector.bolt.listen_address={{ node_ip_address }}:7687
-dbms.connector.bolt.listen_address=:7687
+dbms.connector.bolt.listen_address=0.0.0.0:7687
 
 # HTTP Connector. There must be exactly one HTTP connector.
 dbms.connector.http.enabled=true
-dbms.connector.http.listen_address=:7474
+dbms.connector.http.listen_address={{ node_ip_address }}:7474
 # dbms.connector.http.listen_address=0.0.0.0:7474
 
 # HTTPS Connector. There can be zero or one HTTPS connectors.
 dbms.connector.https.enabled=true
-dbms.connector.https.listen_address=:7473
+dbms.connector.https.listen_address={{ node_ip_address }}:7473
 # dbms.connector.https.listen_address=0.0.0.0:7473
 
 # Number of Neo4j worker threads.
@@ -294,9 +294,9 @@ dbms.connector.https.listen_address=:7473
 # See the Causal Clustering documentation at https://neo4j.com/docs/ for details.
 
 # Savas - extra
-# causal_clustering.multi_dc_license=true
-# causal_clustering.upstream_selection_strategy=connect-randomly-within-server-group,typically-connect-to-random-read-replica
-# causal_clustering.cluster_allow_reads_on_followers=true
+causal_clustering.multi_dc_license=true
+causal_clustering.upstream_selection_strategy=connect-randomly-within-server-group,typically-connect-to-random-read-replica
+causal_clustering.cluster_allow_reads_on_followers=true
 
 # Database mode
 # Allowed values:
@@ -324,7 +324,7 @@ causal_clustering.initial_discovery_members={{ neo4j_initial_discovery_members }
 # Use 0.0.0.0 to bind to any network interface on the machine. If you want to only use a specific interface
 # (such as a private ip address on AWS, for example) then use that ip address instead.
 # If you don't know what value to use here, use this machines ip address.
-causal_clustering.discovery_listen_address=:5000
+causal_clustering.discovery_listen_address={{ node_ip_address }}:5000
 
 # Network interface and port for the transaction shipping server to listen on.
 # Please note that it is also possible to run the backup client against this port so always limit access to it via the
@@ -332,13 +332,13 @@ causal_clustering.discovery_listen_address=:5000
 # any network on this machine, us 0.0.0.0. If you want to constrain communication to a specific network address
 # (such as a private ip on AWS, for example) then use that ip address instead.
 # If you don't know what value to use here, use this machines ip address.
-causal_clustering.transaction_listen_address=:6000
+causal_clustering.transaction_listen_address={{ node_ip_address }}:6000
 
 # Network interface and port for the RAFT server to listen on. If you want to allow for messages to be read from
 # any network on this machine, us 0.0.0.0. If you want to constrain communication to a specific network address
 # (such as a private ip on AWS, for example) then use that ip address instead.
 # If you don't know what value to use here, use this machines ip address.
-causal_clustering.raft_listen_address=:7000
+causal_clustering.raft_listen_address={{ node_ip_address }}:7000
 
 # List a set of names for groups to which this server should belong. This
 # is a comma-separated list and names should only use alphanumericals

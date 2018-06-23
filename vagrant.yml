@@ -17,6 +17,7 @@ datacenters:
     router_ip: "192.168.3.11"
     neo4j_database: "eu-west"
     servers:
+      # In HA the lower the server id of an instance, the higher it's priority in being elected as a master 
       - id: 11
         name: "node1"
         neo4j_dbms_mode: "CORE"
@@ -24,10 +25,19 @@ datacenters:
         ip: "192.168.3.11"
         ram: 8192
         cpus: 4
+      # In HA the lower the server id of an instance, the higher it's priority in being elected as a master 
+      - id: 12
+        name: "node2"
+        neo4j_dbms_mode: "READ_REPLICA"
+        neo4j_server_groups: "eu,eu-west"
+        ip: "192.168.3.12"
+        ram: 8192
+        cpus: 4
   - name: "eu-north"
     router_ip: "192.168.3.21"
     neo4j_database: "eu-north"
     servers:
+      # In HA the lower the server id of an instance, the higher it's priority in being elected as a master 
       - id: 21
         name: "node1"
         neo4j_dbms_mode: "CORE"
@@ -39,6 +49,7 @@ datacenters:
     router_ip: "192.168.3.31"
     neo4j_database: "china"
     servers:
+      # In HA the lower the server id of an instance, the higher it's priority in being elected as a master 
       - id: 31
         name: "node1"
         neo4j_dbms_mode: "CORE"
