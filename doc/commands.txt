@@ -32,6 +32,9 @@ less /var/log/neo4j/debug.log
 sudo journalctl -u neo4j -b
 
 neo4j-admin memrec
+neo4j-admin memrec --database graph.db
+neo4j-shell -host 192.168.3.11
+sudo cat /proc/sys/vm/swappiness
 
 sudo service neo4j stop
 sudo neo4j-admin unbind

@@ -132,14 +132,18 @@ Vagrant.configure("2") do |config|
           run: "always",
           inline: "service neo4j restart"
 
+        node.vm.provision "shell", 
+          run: "always",
+          inline: "sed -i '/neo4j/d' /etc/hosts && cat /vagrant/hosts.out >> /etc/hosts"
+
+        node.vm.provision "shell", 
+          run: "always",
+          inline: "echo vm.swappiness = 10 >> /etc/sysctl.conf && echo vm.vfs_cache_pressure = 50 >> /etc/sysctl.conf && sysctl -p"
+
         delay_script = "scripts/delay-" + dc['name'] + ".sh"
         node.vm.provision "shell", 
           run: "always",
           path: delay_script
-
-        node.vm.provision "shell", 
-          run: "always",
-          inline: "sed -i '/neo4j/d' /etc/hosts && cat /vagrant/hosts.out >> /etc/hosts"
 
       end # node
     end # machine
