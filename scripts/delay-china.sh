@@ -44,6 +44,7 @@ tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip dst 192.168.3
 # tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip src 192.168.3.21/32 flowid 1:10
 tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip dst 192.168.3.11/32 flowid 1:20
 # tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip src 192.168.3.31/32 flowid 1:20
+tc filter add dev enp0s8 protocol ip parent 1: prio 1 u32 match ip dst 192.168.3.12/32 flowid 1:20
 
 # # Martin Devera, author of HTB, then recommends SFQ for beneath these classes:
 # tc qdisc add dev enp0s8 parent 1:10 handle 10: sfq perturb 10

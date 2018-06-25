@@ -45,6 +45,11 @@ Vagrant.configure("2") do |config|
 
         node.vm.network "private_network", ip: machine['ip']
 
+        # First, delete existing routes (from previous provisioning)
+        node.vm.provision "shell", 
+          run: "always",
+          path: "scripts/delete-routes.sh"
+
         # Router machine
         if machine['ip'] == dc['router_ip']
 
@@ -81,6 +86,7 @@ Vagrant.configure("2") do |config|
           end
 
         end # if
+
 
         # Ansible provisioning
 
@@ -136,9 +142,17 @@ Vagrant.configure("2") do |config|
           run: "always",
           inline: "sed -i '/neo4j/d' /etc/hosts && cat /vagrant/hosts.out >> /etc/hosts"
 
+        # node.vm.provision "shell", 
+        #   run: "always",
+        #   inline: "echo vm.swappiness = 1 >> /etc/sysctl.conf && echo vm.vfs_cache_pressure = 50 >> /etc/sysctl.conf && sysctl -p"
+
         node.vm.provision "shell", 
           run: "always",
-          inline: "echo vm.swappiness = 10 >> /etc/sysctl.conf && echo vm.vfs_cache_pressure = 50 >> /etc/sysctl.conf && sysctl -p"
+          inline: "sed -i '/vm.swappiness/d' /etc/sysctl.conf && sed -i '/vm.vfs_cache_pressure/d' /etc/sysctl.conf && cat /vagrant/sysctl.conf >> /etc/sysctl.conf"
+
+        node.vm.provision "shell", 
+          run: "always",
+          path: "scripts/prepare-python.sh"
 
         delay_script = "scripts/delay-" + dc['name'] + ".sh"
         node.vm.provision "shell", 
