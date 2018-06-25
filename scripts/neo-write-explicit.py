@@ -11,7 +11,6 @@ parser.add_argument("--num_recs", help="Number of records to write", type=int, d
 parser.add_argument("--commit_every", help="Number of records after which to commit", type=int, default=100)
 args = parser.parse_args()
 
-# driver = GraphDatabase.driver("bolt://"+args.server+":7687")
 driver = GraphDatabase.driver(args.protocol+"://"+args.server+":7687")
 
 def create_person(driver, name):
