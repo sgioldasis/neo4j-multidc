@@ -40,7 +40,7 @@ with driver.session() as session:
         # set_person_name(tx, node_id, name)
         uncommited = True
         if id%args.commit_every == 0:
-            print 'Committing [' + str(id) + ']'
+            print("Committing [{recs}]".format(recs=id))
             tx.commit()
             uncommited = False
             if id < args.num_recs:
@@ -48,12 +48,12 @@ with driver.session() as session:
                 uncommited = True
     
     if uncommited:
-        print 'Committing [' + str(id) + ']'
+        print('Committing [' + str(id) + ']')
         tx.commit()
 
 elapsed = datetime.now() - startTime
 print
-print "Elapsed time [Explicitly wrote {num_recs}, commit every {commit_every}] : {elapsed}" \
-    .format(num_recs=args.num_recs,commit_every=args.commit_every,elapsed=elapsed)
+print("Elapsed time [Explicitly wrote {num_recs}, commit every {commit_every}] : {elapsed}" 
+    .format(num_recs=args.num_recs,commit_every=args.commit_every,elapsed=elapsed))
 print
     
