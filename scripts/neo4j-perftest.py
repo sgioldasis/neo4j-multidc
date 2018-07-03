@@ -3,6 +3,7 @@
 from neo4j.v1 import GraphDatabase
 from datetime import datetime
 import argparse
+import time
     
 parser = argparse.ArgumentParser()
 parser.add_argument("--server", help="Server to connect", default="localhost")
@@ -28,8 +29,8 @@ def set_person_name(tx, node_id, name):
     tx.run("MATCH (a:Person) WHERE id(a) = $id "
            "SET a.name = $name", id=node_id, name=name)
 
-
-startTime = datetime.now()
+# Write test
+startWrite = time.time()
 with driver.session() as session:
     tx = session.begin_transaction()
     uncommited = True
@@ -49,10 +50,41 @@ with driver.session() as session:
     if uncommited:
         print('Committing [' + str(id) + ']')
         tx.commit()
+elapsedWrite = time.time() - startWrite
 
-elapsed = datetime.now() - startTime
+
+# Read test
+num_read = 0
+def read_all_nodes(tx):
+    global num_read
+    for record in tx.run("MATCH (n) RETURN n"):
+        # print record['n'].id
+        num_read = num_read + 1
+
+startRead = time.time()
+with driver.session() as session:
+    session.read_transaction(read_all_nodes)    
+elapsedRead = time.time() - startRead
+
+
+
+# Results
 print
-print("Elapsed time [Explicitly wrote {num_recs}, commit every {commit_every}] : {elapsed}" 
-    .format(num_recs=args.num_recs,commit_every=args.commit_every,elapsed=elapsed))
+print("ARGUMENTS:")
+print("   server       = {server}".format(server=args.server))
+print("   protocol     = {protocol}".format(protocol=args.protocol))
+print("   num_recs     = {num_recs}".format(num_recs=args.num_recs))
+print("   commit_every = {commit_every}".format(commit_every=args.commit_every))
+
 print
-    
+print("WRITE [{num_recs} rows]:\nElapsed: {elapsed}, RPS: {rps}" 
+    .format(num_recs=args.num_recs,commit_every=args.commit_every,elapsed=elapsedWrite,
+    rps=round(args.num_recs/elapsedWrite,1)))
+
+print
+print("READ [{num_read} rows]:\nElapsed: {elapsed}, RPS: {rps}" 
+    .format(num_read=num_read,elapsed=elapsedRead,
+    rps=round(num_read/float(elapsedRead),1)))
+
+
+print

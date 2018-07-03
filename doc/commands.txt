@@ -67,9 +67,11 @@ CALL dbms.cluster.routing.getServers
 CALL dbms.cluster.role
 
 
-/vagrant/scripts/neo-write-explicit.py --num_recs 1000 --commit_every 100 --server neo4j-eu-west-node1
-/vagrant/scripts/neo-write-explicit.py --num_recs 1000 --commit_every 100 --server neo4j-eu-north-node1
-/vagrant/scripts/neo-write-explicit.py --num_recs 1000 --commit_every 100 --server neo4j-china-node1
+/vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100
+
+/vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-eu-west-node1
+/vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-eu-north-node1 --protocol bolt+routing
+/vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-china-node1 --protocol bolt+routing
 
  --protocol bolt+routing
 
