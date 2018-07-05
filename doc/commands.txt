@@ -65,6 +65,7 @@ sudo neo4j-admin unbind
 sudo rm -rf /var/lib/neo4j/data/databases/graph.db
 sudo service neo4j start
 
+exit
 cp ansible-neo4j/templates/neo4j.cc.conf ansible-neo4j/templates/neo4j.conf
 vagrant provision
 
@@ -72,7 +73,7 @@ vagrant provision
 MONITOR CC CLUSTER
 ------------------
 :sysinfo
-call dbms.cluster.overview
+CALL dbms.cluster.overview
 CALL dbms.cluster.routing.getServers
 CALL dbms.cluster.role
 
@@ -85,7 +86,7 @@ TEST PING
 PERFORMANCE TEST (Python)
 -------------------------
 /vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100
-
+/vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --protocol bolt+routing
 /vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-eu-west-node1
 /vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-eu-north-node1 --protocol bolt+routing
 /vagrant/scripts/neo4j-perftest.py --num_recs 1000 --commit_every 100 --server neo4j-china-node1 --protocol bolt+routing

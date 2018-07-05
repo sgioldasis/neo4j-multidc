@@ -6,6 +6,8 @@ neo4j_initial_node: 192.168.3.11
 neo4j_host_coordination_port: 5001
 neo4j_initial_hosts: "192.168.3.11:5001"
 neo4j_initial_discovery_members: "192.168.3.11:5000,192.168.3.21:5000,192.168.3.31:5000"
+neo4j_upstream_selection_strategy: "user-defined"
+neo4j_cluster_allow_reads_on_followers: "false"
 neo4j_minimum_core_cluster_size_at_formation: 2
 neo4j_minimum_core_cluster_size_at_runtime: 2
 neo4j_heap_initial_size: 3500m
@@ -22,6 +24,8 @@ datacenters:
         name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "eu,eu-west"
+        neo4j_user_defined_upstream_strategy: "groups(eu-west); groups(eu-north); all()"
+        neo4j_refuse_to_be_leader: "false"
         ip: "192.168.3.11"
         ram: 8192
         cpus: 4
@@ -30,6 +34,8 @@ datacenters:
         name: "node2"
         neo4j_dbms_mode: "READ_REPLICA"
         neo4j_server_groups: "eu,eu-west"
+        neo4j_user_defined_upstream_strategy: "groups(eu-west); groups(eu-north); all()"
+        neo4j_refuse_to_be_leader: "false"
         ip: "192.168.3.12"
         ram: 8192
         cpus: 4
@@ -42,6 +48,8 @@ datacenters:
         name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "eu,eu-north"
+        neo4j_user_defined_upstream_strategy: "groups(eu-north); groups(eu-west); all()"
+        neo4j_refuse_to_be_leader: "false"
         ip: "192.168.3.21"
         ram: 8192
         cpus: 4    
@@ -54,6 +62,8 @@ datacenters:
         name: "node1"
         neo4j_dbms_mode: "CORE"
         neo4j_server_groups: "china"
+        neo4j_user_defined_upstream_strategy: "groups(china); groups(eu-north); groups(eu-west); halt()"
+        neo4j_refuse_to_be_leader: "true"
         ip: "192.168.3.31"
         ram: 8192
         cpus: 4    

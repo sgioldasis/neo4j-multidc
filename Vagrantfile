@@ -101,6 +101,7 @@ Vagrant.configure("2") do |config|
         neo4j_dbms_mode = machine['neo4j_dbms_mode']
         neo4j_server_groups = machine['neo4j_server_groups']
         neo4j_database = dc['neo4j_database']
+        neo4j_refuse_to_be_leader = machine['neo4j_refuse_to_be_leader']
         initial_node_ip = settings['neo4j_initial_node']
         neo4j_initial_discovery_members = settings['neo4j_initial_discovery_members']
         neo4j_heap_initial_size = settings['neo4j_heap_initial_size']
@@ -111,6 +112,9 @@ Vagrant.configure("2") do |config|
         host_coordination_port = settings['neo4j_host_coordination_port'].to_s
         # neo4j_initial_hosts = initial_node_ip + ":" + host_coordination_port
         neo4j_initial_hosts = settings['neo4j_initial_hosts']
+        neo4j_upstream_selection_strategy = settings['neo4j_upstream_selection_strategy']
+        neo4j_user_defined_upstream_strategy = machine['neo4j_user_defined_upstream_strategy']
+        neo4j_cluster_allow_reads_on_followers = settings['neo4j_cluster_allow_reads_on_followers']
 
         # Call Ansible also passing it values needed for configuration
         node.vm.provision "ansible_local" do |ansible|
@@ -128,7 +132,11 @@ Vagrant.configure("2") do |config|
             neo4j_minimum_core_cluster_size_at_runtime: neo4j_minimum_core_cluster_size_at_runtime,
             neo4j_dbms_mode: neo4j_dbms_mode,
             neo4j_server_groups: neo4j_server_groups,
-            neo4j_database: neo4j_database
+            neo4j_database: neo4j_database,
+            neo4j_refuse_to_be_leader: neo4j_refuse_to_be_leader,
+            neo4j_upstream_selection_strategy: neo4j_upstream_selection_strategy,
+            neo4j_user_defined_upstream_strategy: neo4j_user_defined_upstream_strategy,
+            neo4j_cluster_allow_reads_on_followers: neo4j_cluster_allow_reads_on_followers
         }
         end
 
